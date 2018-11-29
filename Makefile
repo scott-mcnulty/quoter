@@ -21,9 +21,9 @@ clean: down
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f  {} +
-	rm -r docker-bind-mounts
-	rm -r .pytest_cache
-	rm test-results.xml
+	rm -r docker-bind-mounts || true
+	rm -r .pytest_cache || true
+	rm test-results.xml || true
 
 
 .PHONY: test

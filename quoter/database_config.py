@@ -18,4 +18,4 @@ CONNECTION_STRING = '{}://{}:{}@{}/{}'.format(
 
 ECHO = os.environ.get('ECHO', True)
 NUM_CONNECTION_RETRIES = 5
-RETRY_SLEEP_TIME = 5
+RETRY_SLEEP_TIME = 10
