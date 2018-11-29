@@ -4,4 +4,4 @@
 **docker-bind-mounts
 **.log
 **.vscode
-test-results.xml
+**test-results.xml
