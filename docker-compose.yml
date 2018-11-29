@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+  # Web app
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_TYPE: mysql+pymysql
+      MYSQL_ROOT_PASSWORD: password
+      DATABASE_USER: user
+      DATABASE_USER_PASSWORD: password
+      DATABASE_NAME: quotes_db
+      MYSQL_PORT: 3306
+      DATABASE_HOSTNAME: mysql
+    ports:
+      - 8000:8000
+
+  # Database
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: quotes_db
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker-bind-mounts/mysql/data:/var/lib/mysql
+
+  # For easier viewing of database
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
