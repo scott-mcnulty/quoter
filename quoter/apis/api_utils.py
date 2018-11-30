@@ -28,6 +28,7 @@ def check_required_body_fields(json_data, required_fields):
 
     return missing_keys
 
+
 def check_for_json_body(req, resp, params):
     """
     Falcon hook decorator for validating if json was supplied in request.

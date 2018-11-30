@@ -1,9 +1,10 @@
 # TODOS
 
-- Rename the quote creator and retriever apis to be dispatchers. They don't create/retrieve anything, the database wrapper does.
+- ~~Rename the quote creator and retriever apis be something like dispatchers. They don't create/retrieve anything, the database wrapper does.~~
 - Move database files into own database dir?
 - Clean up the naming for prometheus stuff
-- Put all gunicorn configs in gunigorn_config.py so the Dockerfile entrypoint can be gunicorn app:api
+- ~~Move configs to own directory~~
+- ~~Put all gunicorn configs in gunigorn_config.py so the Dockerfile entrypoint can be gunicorn app:api~~
 - Write tests:
   - test_api_utils.py
   - test_quote_creator.py

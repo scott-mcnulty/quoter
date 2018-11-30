@@ -4,9 +4,61 @@ import logging
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import falcon
 
 from configs import database_config
 import database_models
+
+
+class StorageError(Exception):
+    """
+    Flacon error handler used for depicting storage errors.
+    The error codes are MySQL error codes from:
+    https://dev.mysql.com/doc/refman/5.7/en/server-error-reference.html
+    """
+
+    @classmethod
+    def select_error_description(self, error_code):
+        """
+        Selects error description based on supplied error_code
+        """
+
+        if error_code == 1048:
+            description = 'Missing required field.'
+
+        elif error_code == 1062:
+            description = 'Quote already stored.'
+
+        else:
+            description = 'Some storage error occurred.'
+
+        return description
+
+    @staticmethod
+    def handle(ex, req, resp, params):
+        """
+        Handler for the storage errors.
+        Rolls back database and picks the message that
+        should be sent back based on the MySQL error code.
+        The MySQL generated error message doesn't necessarily
+        have to be sent back in the response
+        """
+
+        error_code, error_message = ex.orig.args
+        logging.error(
+            'Storage error handler got error `{}`'
+            'with code `{}`. Error: {}'.format(
+                error_message,
+                error_code,
+                ex
+            )
+        )
+        db.rollback()
+        description = StorageError.select_error_description(error_code)
+
+        raise falcon.HTTPError(falcon.HTTP_500,
+                               'Storage Error',
+                               description)
 
 
 class DatabaseWrapper(object):
@@ -26,11 +78,13 @@ class DatabaseWrapper(object):
                 break
 
             except sqlalchemy.exc.OperationalError as oe:
-                logging.error('Could not connect to database on attempt {}. \
-                Sleeping then retrying. Error: {}'.format(
-                    connection_tries,
-                    oe
-                ))
+                logging.error(
+                    'Could not connect to database on attempt {}.'
+                    'Sleeping then retrying. Error: {}'.format(
+                        connection_tries,
+                        oe
+                    )
+                )
                 connection_tries += 1
                 time.sleep(database_config.RETRY_SLEEP_TIME)
 
@@ -63,7 +117,7 @@ class DatabaseWrapper(object):
 
     def rollback(self):
         self.session.rollback()
-        
+
     def get_quote(self, quote_id):
         """
         Gets a quote using the id in the supplied
@@ -167,3 +221,7 @@ class DatabaseWrapper(object):
         self.session.delete(quote)
         self.session.commit()
         logging.debug('Deleted quote record.')
+
+
+# Database wrapper instance
+db = DatabaseWrapper()

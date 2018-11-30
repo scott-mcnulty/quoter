@@ -3,11 +3,11 @@ import logging
 
 import falcon
 
-from database import DatabaseWrapper
-import error_handlers
+import database
 from apis.random_quote import RandomQuote
 from apis.retrieve_quote import RetrieveQuoteDispatcher
 from apis.store_quote import StoreQuoteDispatcher
+import sqlalchemy
 
 from configs import app_config
 
@@ -19,8 +19,12 @@ def register_apis(api):
     api.add_route('/api/quote/random', RandomQuote())
     logging.debug('Apis registered.')
 
+
 def register_error_handlers(api):
-    api.add_error_handler(error_handlers.StorageError, error_handlers.StorageError.handle)
+    api.add_error_handler(
+        sqlalchemy.exc.IntegrityError,
+        database.StorageError.handle)
+
 
 def set_up_logging():
     formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -29,8 +33,10 @@ def set_up_logging():
         level=app_config.LOGGING_LEVEL,
         format=formatter)
 
-# Create app
+
+# Create app, database wrapper instance, and register api addons
 api = falcon.API()
-db = DatabaseWrapper()
+db = database.db
 register_apis(api)
+register_error_handlers(api)
 set_up_logging()

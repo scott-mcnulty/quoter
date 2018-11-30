@@ -21,7 +21,7 @@ clean: down
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f  {} +
-	rm -r docker-bind-mounts || true
+	rm -r docker-bind-mounts/mysql || true
 	rm -r .pytest_cache || true
 	rm test-results.xml || true
 
@@ -33,9 +33,10 @@ test:
 
 .PHONY: docker-test
 docker-test: clean
+	docker-compose up -d mysql;
+	@echo "Sleeping for 40 seconds to allow database time to be created if needed";
+	sleep 40;
 	docker-compose up -d;
-	@echo "Sleeping for 30 seconds to allow services time to be created";
-	sleep 30;
 	py.test tests --verbose --junitxml=test-results.xml --pep8 --color=yes $(TEST_PATH) || true;
 	docker-compose logs > docker-compose-test-logs.log;
 	docker-compose down;
