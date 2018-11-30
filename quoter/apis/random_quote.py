@@ -3,12 +3,20 @@ import json
 import logging
 
 import requests
+import grequests
 
 from configs import app_config
 from utils import log
 
 
 class RandomQuote:
+
+    def could_not_get_quote_handler(self, request, exception):
+        return {
+            'error': 'Could not get random quote from {}'.format(
+                app_config.RANDOM_QUOTE_URL
+            )
+        }
 
     def get_random(self):
         """
@@ -36,6 +44,22 @@ class RandomQuote:
             'POST request for n number of random quotes. '
             'JSON body: {}'.format(body)
         )
-        number = int(body.get('number', 1))
-        quotes = [self.get_random()[0] for n in range(number)]
-        resp.media = quotes
+        num = int(body.get('number', 1))
+
+        # We want to be nice to the free quote resource we're using so
+        # I'm leaving this hard-coded in :)
+        if num > 5:
+            num = 5
+
+        # Make grequests generator
+        rs = (grequests.get(app_config.RANDOM_QUOTE_URL) for n in range(num))
+
+        # Get responses
+        reqs = grequests.map(
+            rs,
+            exception_handler=self.could_not_get_quote_handler
+        )
+
+        # Get the json from each requests
+        data = [req.json()[0] for req in reqs]
+        resp.media = data

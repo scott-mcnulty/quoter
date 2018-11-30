@@ -18,14 +18,14 @@ def register_apis(api):
         RetrieveQuoteDispatcher(database.db))
     api.add_route('/api/quote/store', StoreQuoteDispatcher(database.db))
     api.add_route('/api/quote/random', RandomQuote())
-    log('Apis registered.', 'info')
+    log('Apis registered.')
 
 
 def register_error_handlers(api):
     api.add_error_handler(
         sqlalchemy.exc.IntegrityError,
         database.StorageError.handle)
-    log('Error handlers registered.', 'info')
+    log('Error handlers registered.')
 
 
 def register_addons(api):
