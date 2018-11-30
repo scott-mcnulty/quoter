@@ -28,4 +28,7 @@ class RetrieveQuoteDispatcher:
             )
         )
         quote = self.db.get_quote(quote_id)
-        resp.media = quote
+        if quote:
+            resp.media = quote
+        else:
+            resp.media = {}

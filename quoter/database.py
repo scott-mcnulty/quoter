@@ -79,7 +79,7 @@ class DatabaseWrapper(object):
 
             except sqlalchemy.exc.OperationalError as oe:
                 logging.error(
-                    'Could not connect to database on attempt {}.'
+                    'Could not connect to database on attempt {}. '
                     'Sleeping then retrying. Error: {}'.format(
                         connection_tries,
                         oe
@@ -127,10 +127,11 @@ class DatabaseWrapper(object):
         logging.debug('Getting quote with id: {}'.format(quote_id))
         quote = self.session.query(database_models.Quote).filter_by(
             id=quote_id).first()
-        logging.debug(
-            'Got quote: {}'.format(quote.dictionary_representation())
+        logging.info(
+            'Got quote: {}'.format(quote)
         )
-        return quote.dictionary_representation()
+
+        return quote
 
     def create_quote(self, args_dict):
         """

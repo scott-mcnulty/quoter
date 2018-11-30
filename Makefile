@@ -4,10 +4,12 @@ TEST_PATH=./
 help:
 	@echo "    clean"
 	@echo "         Cleans local files/dirs made when testing/etc."
+	@echo "    build"
+	@echo "         Rebuilds services in docker-compose.yml"
 	@echo "    up"
 	@echo "         Brings up the services in docker-compose.yml."
 	@echo "    down"
-	@echo "         tears down the services in docker-compose.yml."
+	@echo "         Tears down the services in docker-compose.yml."
 	@echo "    test"
 	@echo "         Runs py.test on the tests in the tests dir."
 	@echo "    docker-test"
@@ -32,7 +34,7 @@ test:
 
 
 .PHONY: docker-test
-docker-test: clean
+docker-test: build
 	docker-compose up -d mysql;
 	@echo "Sleeping for 40 seconds to allow database time to be created if needed";
 	sleep 40;
@@ -40,6 +42,11 @@ docker-test: clean
 	py.test tests --verbose --junitxml=test-results.xml --pep8 --color=yes $(TEST_PATH) || true;
 	docker-compose logs > docker-compose-test-logs.log;
 	docker-compose down;
+
+
+.PHONY: build
+build: down clean
+	docker-compose build
 
 
 .PHONY: up
