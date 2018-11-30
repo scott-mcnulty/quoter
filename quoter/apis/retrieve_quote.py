@@ -29,6 +29,6 @@ class RetrieveQuoteDispatcher:
         )
         quote = self.db.get_quote(quote_id)
         if quote:
-            resp.media = quote
+            resp.media = quote.dictionary_representation()
         else:
             resp.media = {}
