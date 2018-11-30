@@ -9,11 +9,11 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_TYPE: mysql+pymysql
-      MYSQL_ROOT_PASSWORD: password
+      DATABASE_ROOT_PASSWORD: password
       DATABASE_USER: user
       DATABASE_USER_PASSWORD: password
       DATABASE_NAME: quotes_db
-      MYSQL_PORT: 3306
+      DATABASE_PORT: 3306
       DATABASE_HOSTNAME: mysql
     ports:
       - 8000:8000
@@ -31,6 +31,17 @@ services:
       - 3306:3306
     volumes:
       - ./docker-bind-mounts/mysql/data:/var/lib/mysql
+    
+  # prometheus:
+  #   image: prom/prometheus:v2.5.0
+  #   ports:
+  #     - 9090:9090
+  #   volumes:
+  #     - ./docker-bind-mounts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # - ./docker-bind-mounts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+
+  # https://hub.docker.com/r/prom/mysqld-exporter/
 
   # For easier viewing of database
   adminer:

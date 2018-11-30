@@ -5,14 +5,11 @@ import falcon
 import sqlalchemy
 
 import apis.api_utils
-import logging_config
-
-logger = logging.getLogger(logging_config.LOGGER_NAME)
 
 
-class QuoteRetriever:
+class RetrieveQuoteDispatcher:
     """
-    Retrieves records from the database
+    Dispatches requests to database wrapper to retrieve quotes.
     """
 
     def __init__(self, db):
@@ -25,7 +22,7 @@ class QuoteRetriever:
         """
         On GET request gets the specified record with id from storage
         """
-        logger.info(
+        logging.info(
             'GET request to retrieve stored quote record with id: {}'.format(
                 quote_id
             )

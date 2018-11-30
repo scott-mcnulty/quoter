@@ -1,7 +1,7 @@
 **venv
 **__pycache__
 **.pytest_cache
-**docker-bind-mounts
+docker-bind-mounts/mysql
 **.log
 **.vscode
 **test-results.xml

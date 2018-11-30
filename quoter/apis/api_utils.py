@@ -3,31 +3,6 @@ import logging
 
 import falcon
 
-import logging_config
-
-logger = logging.getLogger(logging_config.LOGGER_NAME)
-
-
-def check_for_json_body(req, required_fields):
-    """
-    Checks request, req, for a json body.
-    Raise falcon.errors.HTTPMissingParam if no body.
-    """
-
-    body = req.stream.read()
-    json_data = {}
-    if body:
-        json_data = json.loads(body)
-        logging.info('Request had json body: {}'.format(json_data))
-
-    else:
-        logging.error('Request had no json body')
-        raise falcon.errors.HTTPMissingParam(
-            required_fields
-        )
-
-    return json_data
-
 
 def check_required_body_fields(json_data, required_fields):
     """
@@ -52,3 +27,14 @@ def check_required_body_fields(json_data, required_fields):
             raise falcon.errors.HTTPMissingParam(required_field)
 
     return missing_keys
+
+def check_for_json_body(req, resp, params):
+    """
+    Falcon hook decorator for validating if json was supplied in request.
+
+    https://falcon.readthedocs.io/en/stable/api/hooks.html
+    """
+    body = req.media
+    if not body:
+        raise falcon.HTTPBadRequest('Empty request body',
+                                    'A valid JSON document is required.')

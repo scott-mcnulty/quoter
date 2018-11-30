@@ -1,5 +1,5 @@
 """
-Models for the different tables we'll use
+Models for the different tables we'll be using.
 """
 
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -10,15 +10,15 @@ Base = declarative_base()
 
 class Quote(Base):
     """
-    Table to store quotes
+    Table to store quotes.
     """
     __tablename__ = 'quotes'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, nullable=False)
     title = Column(String(50), nullable=False)
     content = Column(String(1000), nullable=False)
     link = Column(String(100), nullable=False)
-    custom_meta = Column(String(250), nullable=False)
+    custom_meta = Column(String(250), nullable=True)
 
     def __repr__(self):
         return "<Quote(id='%s', \

@@ -5,11 +5,8 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import database_config
+from configs import database_config
 import database_models
-import logging_config
-
-logger = logging.getLogger(logging_config.LOGGER_NAME)
 
 
 class DatabaseWrapper(object):
@@ -25,11 +22,11 @@ class DatabaseWrapper(object):
 
             try:
                 self.create_all_tables()
-                logger.info('Connected to database.')
+                logging.info('Connected to database.')
                 break
 
             except sqlalchemy.exc.OperationalError as oe:
-                logger.error('Could not connect to database on attempt {}. \
+                logging.error('Could not connect to database on attempt {}. \
                 Sleeping then retrying. Error: {}'.format(
                     connection_tries,
                     oe
@@ -53,7 +50,7 @@ class DatabaseWrapper(object):
             database_config.CONNECTION_STRING,
             encoding=database_config.DATABASE_ENCODING,
             echo=database_config.ECHO)
-        logger.debug('Created database engine.')
+        logging.debug('Created database engine.')
 
     def create_all_tables(self):
         """
@@ -64,16 +61,19 @@ class DatabaseWrapper(object):
             self.create_engine()
         database_models.Base.metadata.create_all(self.engine)
 
+    def rollback(self):
+        self.session.rollback()
+        
     def get_quote(self, quote_id):
         """
         Gets a quote using the id in the supplied
         dictionary, args_dict
         """
 
-        logger.debug('Getting quote with id: {}'.format(quote_id))
+        logging.debug('Getting quote with id: {}'.format(quote_id))
         quote = self.session.query(database_models.Quote).filter_by(
             id=quote_id).first()
-        logger.debug(
+        logging.debug(
             'Got quote: {}'.format(quote.dictionary_representation())
         )
         return quote.dictionary_representation()
@@ -84,7 +84,7 @@ class DatabaseWrapper(object):
         from the values in a supplied dictionary, args_dict
         """
 
-        logger.debug(
+        logging.debug(
             'Creating quote object with values: {}'.format(args_dict)
         )
         quote = database_models.Quote(
@@ -94,7 +94,7 @@ class DatabaseWrapper(object):
             link=args_dict.get('link'),
             custom_meta=args_dict.get('custom_meta', 'None')
         )
-        logger.debug('Created quote.')
+        logging.debug('Created quote.')
         return quote
 
     def add_quote(self, args_dict):
@@ -106,16 +106,11 @@ class DatabaseWrapper(object):
         """
 
         quote = self.create_quote(args_dict)
-        logger.debug('Creating quote record with values: {}'.format(quote))
-        try:
-            self.session.add(quote)
-            self.session.commit()
-            logger.debug('Quote record created.')
-        except sqlalchemy.exc.InvalidRequestError as ire:
-            self.session.rollback()
-            logger.error(
-                'Could not create quote record. Error: {}'.format(ire)
-            )
+        logging.debug('Creating quote record with values: {}'.format(quote))
+
+        self.session.add(quote)
+        self.session.commit()
+        logging.debug('Quote record created.')
 
     def add_quotes(self, args_dict_list):
         """
@@ -127,16 +122,11 @@ class DatabaseWrapper(object):
         """
 
         quotes = [self.create_quote(args_dict) for args_dict in args_dict_list]
-        logger.debug('Creating quote records with values: {}'.format(quotes))
-        try:
-            self.session.add_all(quotes)
-            self.session.commit()
-            logger.debug('Quote records created.')
-        except sqlalchemy.exc.InvalidRequestError as ire:
-            self.session.rollback()
-            logger.error(
-                'Could not create quote records. Error: {}'.format(ire)
-            )
+        logging.debug('Creating quote records with values: {}'.format(quotes))
+
+        self.session.add_all(quotes)
+        self.session.commit()
+        logging.debug('Quote records created.')
 
     def update_quote(self, args_dict):
         """
@@ -147,7 +137,7 @@ class DatabaseWrapper(object):
         id, title, content, link, custom_meta
         """
 
-        logger.debug(
+        logging.debug(
             'Updating quote with id: {}'.format(args_dict.get('id'))
         )
         quote = self.session.query(database_models.Quote).filter_by(
@@ -156,9 +146,9 @@ class DatabaseWrapper(object):
         quote.title = args_dict.get('title')
         quote.content = args_dict.get('content')
         quote.link = args_dict.get('link')
-        quote.custom_meta = args_dict.get('custom_meta', 'None')
+        quote.custom_meta = args_dict.get('custom_meta')
         self.session.commit()
-        logger.debug('Updated quote record.')
+        logging.debug('Updated quote record.')
 
     def delete_quote(self, args_dict):
         """
@@ -169,11 +159,11 @@ class DatabaseWrapper(object):
         id
         """
 
-        logger.debug(
+        logging.debug(
             'Deleting quote record with id: {}'.format(args_dict.get('id'))
         )
         quote = self.session.query(database_models.Quote).filter_by(
             id=args_dict.get('id')).first()
         self.session.delete(quote)
         self.session.commit()
-        logger.debug('Deleted quote record.')
+        logging.debug('Deleted quote record.')

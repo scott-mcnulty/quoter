@@ -4,25 +4,33 @@ import logging
 import falcon
 
 from database import DatabaseWrapper
+import error_handlers
 from apis.random_quote import RandomQuote
-from apis.quote_retriever import QuoteRetriever
-from apis.quote_creator import QuoteCreator
-import app_config
-import logging_config
+from apis.retrieve_quote import RetrieveQuoteDispatcher
+from apis.store_quote import StoreQuoteDispatcher
+
+from configs import app_config
 
 
 def register_apis(api):
 
-    api.add_route('/api/quote/{quote_id}', QuoteRetriever(db))
-    api.add_route('/api/quote/create', QuoteCreator(db))
+    api.add_route('/api/quote/{quote_id}', RetrieveQuoteDispatcher(db))
+    api.add_route('/api/quote/store', StoreQuoteDispatcher(db))
     api.add_route('/api/quote/random', RandomQuote())
-    logger.debug('Apis registered.')
+    logging.debug('Apis registered.')
 
-# Set up logging
-logger = logging.getLogger(logging_config.LOGGER_NAME)
-logger.addHandler(logging_config.STDOUT_STREAM_HANDLER)
+def register_error_handlers(api):
+    api.add_error_handler(error_handlers.StorageError, error_handlers.StorageError.handle)
+
+def set_up_logging():
+    formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=app_config.LOGGING_LEVEL,
+        format=formatter)
 
 # Create app
 api = falcon.API()
 db = DatabaseWrapper()
 register_apis(api)
+set_up_logging()
