@@ -50,6 +50,8 @@ class RandomQuote:
         # I'm leaving this hard-coded in :)
         if num > 5:
             num = 5
+        elif num < 0:
+            num = 0
 
         # Make grequests generator
         rs = (grequests.get(app_config.RANDOM_QUOTE_URL) for n in range(num))
