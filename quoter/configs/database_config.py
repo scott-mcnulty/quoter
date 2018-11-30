@@ -16,6 +16,7 @@ CONNECTION_STRING = '{}://{}:{}@{}/{}'.format(
     DATABASE_NAME
 )
 
-ECHO = os.environ.get('ECHO', True)
+# https://docs.sqlalchemy.org/en/latest/core/engines.html#sqlalchemy.create_engine.params.echo
+ECHO = os.environ.get('DATABASE_ECHO', False)
 NUM_CONNECTION_RETRIES = 5
 RETRY_SLEEP_TIME = 10

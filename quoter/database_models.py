@@ -14,23 +14,25 @@ class Quote(Base):
     """
     __tablename__ = 'quotes'
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, nullable=False, primary_key=True, autoincrement=False)
     title = Column(String(50), nullable=False)
     content = Column(String(1000), nullable=False)
     link = Column(String(100), nullable=False)
     custom_meta = Column(String(250), nullable=True)
 
     def __repr__(self):
-        return "<Quote(id='%s', \
-            title='%s', \
-            content='%s', \
-            link='%s', \
-            custom_meta='%s')>" % (
-            self.id,
-            self.title,
-            self.content,
-            self.link,
-            self.custom_meta
+        return (
+            '<Quote(id={}, '
+            'title={}, '
+            'content={}, '
+            'link={}, '
+            'custom_meta={})>'.format(
+                self.id,
+                self.title,
+                self.content,
+                self.link,
+                self.custom_meta
+            )
         )
 
     def dictionary_representation(self):

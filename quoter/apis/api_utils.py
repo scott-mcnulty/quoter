@@ -3,17 +3,20 @@ import logging
 
 import falcon
 
+from utils import log
+
 
 def check_required_body_fields(json_data, required_fields):
     """
     Checks for our required quote fields in the give jsonbody
     """
 
-    logging.info(
+    log(
         'Checking json data, {}, against required fields: {}'.format(
             json_data,
             required_fields
-        )
+        ),
+        'debug'
     )
     keys = json_data.keys()
     missing_keys = []

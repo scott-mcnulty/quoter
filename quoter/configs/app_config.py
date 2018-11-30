@@ -7,6 +7,3 @@ RANDOM_QUOTE_URL = '{}/wp-json/posts?\
     )
 
 PORT = os.environ.get('PORT', 8000)
-
-# https://docs.python.org/3/library/logging.html#logging-levels
-LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 20)

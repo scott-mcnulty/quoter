@@ -6,4 +6,4 @@ WORKDIR /quoter
 RUN pip3 install --upgrade pip -r requirements/quoter_requirements.txt
 
 EXPOSE 8000
-ENTRYPOINT ["gunicorn", "--config", "configs/gunicorn_config.py", "app:api"]
+ENTRYPOINT ["gunicorn", "--config", "configs/gunicorn_config.py", "app:create_app()"]
