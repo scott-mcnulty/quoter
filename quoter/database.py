@@ -144,6 +144,19 @@ class DatabaseWrapper(object):
 
         return quote
 
+    def get_quotes(self, quote_ids):
+        """
+        Gets a quotes using the ids in the supplied
+        list quote_ids
+        """
+
+        log('Getting quote with id: {}'.format(quote_ids), 'debug')
+        quotes = self.session.query(database_models.Quote).filter(
+            database_models.Quote.id.in_(quote_ids))
+        log('Got quotes: {}'.format(quotes))
+
+        return quotes
+
     def create_quote(self, args_dict):
         """
         Creates a database_models.Quote object
@@ -182,7 +195,7 @@ class DatabaseWrapper(object):
 
         args_dict_list is a list of dicts where each
         dict should have fields:
-        id, title, content, link, custom_meta
+        id, title, content, link
         """
 
         quotes = [self.create_quote(args_dict) for args_dict in args_dict_list]
@@ -201,7 +214,7 @@ class DatabaseWrapper(object):
         id, title, content, link, custom_meta
         """
 
-        log('Updating quote with id: {}'.format(args_dict.get('id'), 'debug'))
+        log('Updating quote with id: {}'.format(args_dict.get('id')), 'debug')
         quote = self.session.query(database_models.Quote).filter_by(
             id=args_dict.get('id')).first()
 

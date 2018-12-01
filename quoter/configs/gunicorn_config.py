@@ -3,10 +3,8 @@
 import os
 import sys
 
-import configs.app_config as app_config
 
-
-bind = ':{}'.format(os.environ.get('PORT', app_config.PORT))
+bind = ':{}'.format(os.environ.get('PORT', 8000))
 workers = int(os.environ.get('GUNICORN_PROCESSES', '1'))
 threads = int(os.environ.get('GUNICORN_THREADS', '1'))
 

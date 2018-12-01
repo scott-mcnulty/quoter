@@ -6,13 +6,19 @@ import sqlalchemy
 
 import database
 from apis.random_quote import RandomQuote
-from apis.retrieve_quote import RetrieveQuoteDispatcher
+from apis.retrieve_quote import (
+    RetrieveQuoteDispatcher,
+    RetrieveMultipleQuotesDispatcher
+)
 from apis.store_quote import StoreQuoteDispatcher
 from utils import log
 from configs import app_config
 
 
 def register_apis(api):
+    api.add_route(
+        '/api/quote/multi',
+        RetrieveMultipleQuotesDispatcher(database.db))
     api.add_route(
         '/api/quote/{quote_id}',
         RetrieveQuoteDispatcher(database.db))

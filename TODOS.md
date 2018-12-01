@@ -16,3 +16,4 @@
     - ~~requests-futures~~
 - Have a falcon hooks in the dispatchers for after that checks if an exception happened when trying to store/retrieve
 - Verify consistent use of either " or ' for strings/etc
+- Add functionality to create, update, delete many quotes at once.
